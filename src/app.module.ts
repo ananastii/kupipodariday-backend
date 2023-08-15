@@ -5,9 +5,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import config from './config/config';
 import { DatabaseConfigFactory } from './config/database.config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     ConfigModule.forRoot({ load: [config], isGlobal: true }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
