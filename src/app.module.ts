@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import config from './config/config';
 import { DatabaseConfigFactory } from './config/database.config';
 import { UsersModule } from './users/users.module';
+import { HashModule } from './hash/hash.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
       useClass: DatabaseConfigFactory,
     }),
+    HashModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

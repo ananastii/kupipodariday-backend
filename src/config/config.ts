@@ -12,4 +12,8 @@ export default () => ({
     entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
     synchronize: Boolean(process.env.SYNCHRONIZE) || true,
   },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'secret',
+    exp: process.env.JWT_EXP || '30m',
+  },
 });
