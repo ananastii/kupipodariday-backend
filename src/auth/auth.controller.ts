@@ -13,7 +13,7 @@ export class AuthController {
   ) {}
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  signIn(@AuthUserId() userId) {
+  signIn(@AuthUserId() userId: number) {
     return this.authService.signin(userId);
   }
 

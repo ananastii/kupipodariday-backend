@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { HashService } from '../hash/hash.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -23,21 +24,31 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.userRepository.find();
-  }
-
   findOne(query: string) {
     return this.userRepository.findOne({
-      where: [{ email: query }, { username: query }],
+      where: { username: query },
     });
   }
 
-  findOneById(id: number) {
+  findMany(query: FindUserDto) {
+    return this.userRepository.find({
+      where: [
+        { username: Like(`%${query.query}%`) },
+        { email: Like(`%${query.query}%`) },
+      ],
+    });
+  }
+
+  findById(id: number) {
     return this.userRepository.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const { password } = updateUserDto;
+    if (password) {
+      updateUserDto.password = await this.hashService.getHash(password);
+    }
+    await this.userRepository.update(id, updateUserDto);
+    return await this.findById(id);
   }
 }

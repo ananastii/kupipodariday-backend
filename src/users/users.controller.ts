@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthUserId } from '../common/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { FindUserDto } from './dto/find-user.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -12,9 +24,9 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Get('me')
+  findOwn(@AuthUserId() id: number) {
+    return this.usersService.findById(id);
   }
 
   @Get(':username')
@@ -22,8 +34,13 @@ export class UsersController {
     return this.usersService.findOne(username);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('me')
+  update(@AuthUserId() id: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @Post('find')
+  findMany(@Body() FindUserDto: FindUserDto) {
+    return this.usersService.findMany(FindUserDto);
   }
 }
