@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthUserId } from '../common/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
@@ -18,11 +17,6 @@ import { FindUserDto } from './dto/find-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
 
   @Get('me')
   findOwn(@AuthUserId() id: number) {
