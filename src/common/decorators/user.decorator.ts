@@ -6,3 +6,10 @@ export const AuthUserId = createParamDecorator(
     return request.user.id;
   },
 );
+
+export const AuthUser = createParamDecorator(
+  (data: never, context: ExecutionContext): number => {
+    const request = context.switchToHttp().getRequest();
+    return request.user;
+  },
+);

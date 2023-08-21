@@ -1,8 +1,7 @@
-import { IsDecimal, IsInt, IsUrl, Length, Min } from 'class-validator';
+import { IsInt, IsNumber, IsUrl, Length, Min } from 'class-validator';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
-import { Entity, Column, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../common/base.entity';
 
 @Entity()
@@ -19,13 +18,13 @@ export class Wish extends BaseEntity {
   @IsUrl()
   image: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  @IsDecimal({ decimal_digits: '2' })
+  @Column({ type: 'float' })
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   price: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  @IsDecimal({ decimal_digits: '2' })
+  @Column({ type: 'float', default: 0 })
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   raised: number;
 
