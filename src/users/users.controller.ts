@@ -34,7 +34,7 @@ export class UsersController {
   }
 
   @Post('find')
-  findMany(@Body() FindUserDto: FindUserDto) {
-    return this.usersService.findMany(FindUserDto);
+  findMany(@Body() findUserDto: FindUserDto) {
+    return this.usersService.findMany(findUserDto);
   }
 }
