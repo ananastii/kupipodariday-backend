@@ -6,8 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IsOwned } from '../..//common/decorators/owner.decorator';
-import { WishesService } from '../wishes.service';
+import { IsOwned } from '../decorators/owner.decorator';
+import { WishesService } from '../../wishes/wishes.service';
 
 @Injectable()
 export class WishOwnerGuard implements CanActivate {

@@ -3,7 +3,7 @@ import { AuthUserId } from '../common/decorators/user.decorator';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local.guard';
+import { LocalAuthGuard } from '../common/guards/local.guard';
 
 @Controller()
 export class AuthController {

@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthUserId } from '../common/decorators/user.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { FindUserDto } from './dto/find-user.dto';
 
 @UseGuards(JwtAuthGuard)

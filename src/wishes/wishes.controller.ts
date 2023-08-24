@@ -11,11 +11,11 @@ import {
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { AuthUser } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
-import { WishOwnerGuard } from './guards/wish-owner.guard';
-import { IsOwned } from 'src/common/decorators/owner.decorator';
+import { WishOwnerGuard } from '../common/guards/wish-owner.guard';
+import { IsOwned } from '../common/decorators/owner.decorator';
 
 @Controller('wishes')
 export class WishesController {
