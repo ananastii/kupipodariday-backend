@@ -46,8 +46,8 @@ export class WishesController {
   @UseGuards(JwtAuthGuard, WishOwnerGuard)
   @Patch(':id')
   @IsOwned(true)
-  update(@Param('id') wishId: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+wishId, updateWishDto);
+  update(@Param('id') wishId: number, @Body() updateWishDto: UpdateWishDto) {
+    return this.wishesService.update(wishId, updateWishDto);
   }
 
   @UseGuards(JwtAuthGuard, WishOwnerGuard)

@@ -9,18 +9,20 @@ import { UsersModule } from './users/users.module';
 import { HashModule } from './hash/hash.module';
 import { AuthModule } from './auth/auth.module';
 import { WishesModule } from './wishes/wishes.module';
+import { OffersModule } from './offers/offers.module';
 
 @Module({
   imports: [
     UsersModule,
     WishesModule,
+    OffersModule,
+    HashModule,
+    AuthModule,
     ConfigModule.forRoot({ load: [config], isGlobal: true }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useClass: DatabaseConfigFactory,
     }),
-    HashModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

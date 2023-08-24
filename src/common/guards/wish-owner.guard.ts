@@ -27,7 +27,9 @@ export class WishOwnerGuard implements CanActivate {
       throw new UnauthorizedException('You are not the owner of this wish');
     }
     if (!isOwned && wish.owner.id === userId) {
-      throw new BadRequestException('You are trying to copy your own wish');
+      throw new BadRequestException(
+        'You are trying to copy or donate to your own wish',
+      );
     }
     return true;
   }
