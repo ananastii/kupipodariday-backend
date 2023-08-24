@@ -51,4 +51,32 @@ export class UsersService {
     await this.userRepository.update(id, updateUserDto);
     return await this.findById(id);
   }
+
+  async findOwnWishes(id: number) {
+    const userWishes = await this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'wishes',
+        'wishes.owner',
+        'wishes.offers',
+        'wishes.offers.user',
+      ],
+      // select: ['wishes'],
+    });
+    return userWishes.wishes;
+  }
+
+  async findWishes(username: string) {
+    const userWishes = await this.userRepository.findOne({
+      where: { username },
+      relations: [
+        'wishes',
+        'wishes.offers',
+        'wishes.offers.item',
+        'wishes.offers.user',
+        'wishes.offers.item.owner',
+      ],
+    });
+    return userWishes.wishes;
+  }
 }

@@ -19,7 +19,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  findOwn(@AuthUserId() id: number) {
+  getOwn(@AuthUserId() id: number) {
     return this.usersService.findById(id);
   }
 
@@ -36,5 +36,15 @@ export class UsersController {
   @Post('find')
   findMany(@Body() findUserDto: FindUserDto) {
     return this.usersService.findMany(findUserDto);
+  }
+
+  @Get('me/wishes')
+  getOwnWishes(@AuthUserId() id: number) {
+    return this.usersService.findOwnWishes(id);
+  }
+
+  @Get(':username/wishes')
+  getUserWishes(@Param('username') username: string) {
+    return this.usersService.findWishes(username);
   }
 }
