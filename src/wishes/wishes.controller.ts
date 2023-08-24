@@ -12,9 +12,10 @@ import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { AuthUser, AuthUserId } from '../common/decorators/user.decorator';
+import { AuthUser } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { WishOwnerGuard } from './guards/wish-owner.guard';
+import { IsOwned } from 'src/common/decorators/owner.decorator';
 
 @Controller('wishes')
 export class WishesController {
@@ -44,13 +45,22 @@ export class WishesController {
 
   @UseGuards(JwtAuthGuard, WishOwnerGuard)
   @Patch(':id')
+  @IsOwned(true)
   update(@Param('id') wishId: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+wishId, updateWishDto);
   }
 
   @UseGuards(JwtAuthGuard, WishOwnerGuard)
   @Delete(':id')
+  @IsOwned(true)
   async remove(@Param('id') wishId: number) {
     return this.wishesService.remove(wishId);
+  }
+
+  @UseGuards(JwtAuthGuard, WishOwnerGuard)
+  @Post(':id/copy')
+  @IsOwned(false)
+  copy(@Param('id') wishId: number, @AuthUser() user: User) {
+    return this.wishesService.copy(wishId, user);
   }
 }
