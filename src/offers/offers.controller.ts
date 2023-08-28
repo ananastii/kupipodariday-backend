@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { AuthUser } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
+import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
 
+@UseInterceptors(PasswordInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller('offers')
 export class OffersController {

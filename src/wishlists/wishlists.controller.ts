@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -14,7 +15,9 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { AuthUser, AuthUserId } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
+import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
 
+@UseInterceptors(PasswordInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller('wishlistlists')
 export class WishlistsController {

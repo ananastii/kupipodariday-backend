@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthUserId } from '../common/decorators/user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { FindUserDto } from './dto/find-user.dto';
+import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
 
 @UseGuards(JwtAuthGuard)
+@UseInterceptors(PasswordInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
