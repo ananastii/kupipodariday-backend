@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, In } from 'typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -78,5 +78,11 @@ export class WishesService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getManyByIds(ids: number[]) {
+    return await this.wishRepository.find({
+      where: { id: In(ids) },
+    });
   }
 }

@@ -10,12 +10,14 @@ import { HashModule } from './hash/hash.module';
 import { AuthModule } from './auth/auth.module';
 import { WishesModule } from './wishes/wishes.module';
 import { OffersModule } from './offers/offers.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
 
 @Module({
   imports: [
     UsersModule,
     WishesModule,
     OffersModule,
+    WishlistsModule,
     HashModule,
     AuthModule,
     ConfigModule.forRoot({ load: [config], isGlobal: true }),
