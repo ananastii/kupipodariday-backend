@@ -41,8 +41,14 @@ export class WishesService {
     });
   }
 
-  async update(wishId: number, updateWishDto: UpdateWishDto) {
-    const wish = await this.wishRepository.findOne({ where: { id: wishId } });
+  async update(wishId: number, updateWishDto: UpdateWishDto, userId: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id: wishId },
+      relations: ['owner'],
+    });
+    if (wish.owner.id !== userId) {
+      throw new BadRequestException('You are not the owner of the wish');
+    }
     if (updateWishDto.price && wish.raised > 0) {
       throw new BadRequestException(
         'You cannot update price because some sum is already raised',
@@ -52,13 +58,26 @@ export class WishesService {
     return await this.findById(wishId);
   }
 
-  async remove(id: number) {
-    const wish = await this.findById(id);
-    await this.wishRepository.delete(id);
+  async remove(wishId: number, userId: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id: wishId },
+      relations: ['owner'],
+    });
+    if (wish.owner.id !== userId) {
+      throw new BadRequestException('You are not the owner of the wish');
+    }
+    await this.wishRepository.delete(wishId);
     return wish;
   }
 
   async copy(wishId: number, user: User) {
+    const wish = await this.wishRepository.findOne({
+      where: { id: wishId },
+      relations: ['owner'],
+    });
+    if (wish.owner.id === user.id) {
+      throw new BadRequestException('You сannot copy your own wish');
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -84,5 +103,9 @@ export class WishesService {
     return await this.wishRepository.find({
       where: { id: In(ids) },
     });
+  }
+
+  updateRaised(id: number, raised: number) {
+    return this.wishRepository.update(id, { raised });
   }
 }

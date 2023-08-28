@@ -23,7 +23,7 @@ export class OffersService {
         'The offer amount exceeds the remaining amount',
       );
     }
-    await this.wishesService.update(itemId, { raised: totalRaised });
+    await this.wishesService.updateRaised(itemId, totalRaised);
     return await this.offerRepository.save({ ...offer, user, item: wish });
   }
 
