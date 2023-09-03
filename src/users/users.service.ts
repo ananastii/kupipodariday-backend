@@ -23,7 +23,7 @@ export class UsersService {
     const { username, email, password } = createUserDto;
 
     const existingUser = await this.userRepository.findOne({
-      where: { username, email },
+      where: [{ username }, { email }],
     });
     if (existingUser) {
       throw new ConflictException(
