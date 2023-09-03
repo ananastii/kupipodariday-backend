@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { AuthUser, AuthUserId } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
+import { ValidationExceptionFilter } from 'src/common/filters/validation-exception.filter';
 
 @UseInterceptors(PasswordInterceptor)
 @UseGuards(JwtAuthGuard)
@@ -24,6 +26,7 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
+  @UseFilters(ValidationExceptionFilter)
   create(@Body() createWishlistDto: CreateWishlistDto, @AuthUser() user: User) {
     return this.wishlistsService.create(createWishlistDto, user);
   }
@@ -39,6 +42,7 @@ export class WishlistsController {
   }
 
   @Patch(':id')
+  @UseFilters(ValidationExceptionFilter)
   update(
     @Param('id') wishId: number,
     @Body() updateWishlistDto: UpdateWishlistDto,

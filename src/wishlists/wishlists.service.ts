@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -27,16 +31,22 @@ export class WishlistsService {
   }
 
   findAll() {
-    return this.wishlistRepository.find({
-      relations: ['owner', 'items'],
-    });
+    return (
+      this.wishlistRepository.find({
+        relations: ['owner', 'items'],
+      }) || []
+    );
   }
 
-  findById(id: number) {
-    return this.wishlistRepository.findOne({
+  async findById(id: number) {
+    const wishlist = await this.wishlistRepository.findOne({
       where: { id },
       relations: ['owner', 'items'],
     });
+    if (!wishlist) {
+      throw new NotFoundException('Wishlist not found');
+    }
+    return wishlist;
   }
 
   async update(
@@ -45,7 +55,9 @@ export class WishlistsService {
     userId: number,
   ) {
     const wishlist = await this.findById(id);
-    console.log(wishlist);
+    if (!wishlist) {
+      throw new NotFoundException('Wishlist not found');
+    }
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException('You are not the owner of the wishlist');
     }
@@ -64,6 +76,9 @@ export class WishlistsService {
 
   async remove(wishId: number, userId: number) {
     const wishlist = await this.findById(wishId);
+    if (!wishlist) {
+      throw new NotFoundException('Wishlist not found');
+    }
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException('You are not the owner of the wishlist');
     }

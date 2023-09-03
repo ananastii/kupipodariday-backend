@@ -7,15 +7,17 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
-import { AuthUser } from '../common/decorators/user.decorator';
+import { AuthUser, AuthUserId } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
+import { ValidationExceptionFilter } from '../common/filters/validation-exception.filter';
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
@@ -48,6 +50,7 @@ export class WishesController {
   @UseInterceptors(PasswordInterceptor)
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @UseFilters(ValidationExceptionFilter)
   update(
     @Param('id') wishId: number,
     @Body() updateWishDto: UpdateWishDto,
@@ -59,7 +62,7 @@ export class WishesController {
   @UseInterceptors(PasswordInterceptor)
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') wishId: number, @AuthUser() userId: number) {
+  async remove(@Param('id') wishId: number, @AuthUserId() userId: number) {
     return this.wishesService.remove(wishId, userId);
   }
 

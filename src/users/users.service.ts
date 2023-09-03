@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { HashService } from '../hash/hash.service';
@@ -14,33 +18,53 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private readonly hashService: HashService,
   ) {}
+
   async create(createUserDto: CreateUserDto) {
-    const hashedPassword = await this.hashService.getHash(
-      createUserDto.password,
-    );
-    return this.userRepository.save({
+    const { username, email, password } = createUserDto;
+
+    const existingUser = await this.userRepository.findOne({
+      where: { username, email },
+    });
+    if (existingUser) {
+      throw new ConflictException(
+        'A user with this email or username already exists',
+      );
+    }
+    const hashedPassword = await this.hashService.getHash(password);
+    const user = await this.userRepository.save({
       ...createUserDto,
       password: hashedPassword,
     });
+    return user;
   }
 
-  findOne(query: string) {
-    return this.userRepository.findOne({
+  async findOne(query: string) {
+    const user = await this.userRepository.findOne({
       where: { username: query },
     });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   findMany(query: FindUserDto) {
-    return this.userRepository.find({
-      where: [
-        { username: Like(`%${query.query}%`) },
-        { email: Like(`%${query.query}%`) },
-      ],
-    });
+    return (
+      this.userRepository.find({
+        where: [
+          { username: Like(`%${query.query}%`) },
+          { email: Like(`%${query.query}%`) },
+        ],
+      }) || []
+    );
   }
 
-  findById(id: number) {
-    return this.userRepository.findOneBy({ id });
+  async findById(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -61,13 +85,12 @@ export class UsersService {
         'wishes.offers',
         'wishes.offers.user',
       ],
-      // select: ['wishes'],
     });
-    return userWishes.wishes;
+    return userWishes.wishes || [];
   }
 
   async findWishes(username: string) {
-    const userWishes = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { username },
       relations: [
         'wishes',
@@ -77,6 +100,9 @@ export class UsersService {
         'wishes.offers.item.owner',
       ],
     });
-    return userWishes.wishes;
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user.wishes || [];
   }
 }

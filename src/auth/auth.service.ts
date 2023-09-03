@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from '../hash/hash.service';
 import { UsersService } from '../users/users.service';
@@ -12,10 +12,12 @@ export class AuthService {
   ) {}
   async validatePassword(username: string, password: string) {
     const user = await this.usersService.findOne(username);
+
     if (user && (await this.hashService.verifyHash(password, user.password))) {
       return user;
+    } else {
+      throw new UnauthorizedException('Username or password is invalid');
     }
-    return null;
   }
   async signin(userId: number) {
     const token = await this.jwtService.signAsync({ sub: userId });

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -14,6 +15,7 @@ import { AuthUserId } from '../common/decorators/user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt.guard';
 import { FindUserDto } from './dto/find-user.dto';
 import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
+import { ValidationExceptionFilter } from '../common/filters/validation-exception.filter';
 
 @UseGuards(JwtAuthGuard)
 @UseInterceptors(PasswordInterceptor)
@@ -32,6 +34,7 @@ export class UsersController {
   }
 
   @Patch('me')
+  @UseFilters(ValidationExceptionFilter)
   update(@AuthUserId() id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }

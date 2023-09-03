@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { DataSource, Repository, In } from 'typeorm';
@@ -19,26 +23,34 @@ export class WishesService {
   }
 
   async findById(id: number) {
-    return await this.wishRepository.findOne({
+    const wish = await this.wishRepository.findOne({
       where: { id },
       relations: ['owner', 'offers'],
     });
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
+    return wish;
   }
 
   async findLast() {
-    return await this.wishRepository.find({
-      order: { createdAt: 'desc' },
-      take: wishesLimit.last,
-      relations: ['owner', 'offers', 'offers.user'],
-    });
+    return (
+      (await this.wishRepository.find({
+        order: { createdAt: 'desc' },
+        take: wishesLimit.last,
+        relations: ['owner', 'offers', 'offers.user'],
+      })) || []
+    );
   }
 
   async findTop() {
-    return await this.wishRepository.find({
-      order: { copied: 'desc' },
-      take: wishesLimit.top,
-      relations: ['owner', 'offers', 'offers.user'],
-    });
+    return (
+      (await this.wishRepository.find({
+        order: { copied: 'desc' },
+        take: wishesLimit.top,
+        relations: ['owner', 'offers', 'offers.user'],
+      })) || []
+    );
   }
 
   async update(wishId: number, updateWishDto: UpdateWishDto, userId: number) {
@@ -46,12 +58,15 @@ export class WishesService {
       where: { id: wishId },
       relations: ['owner'],
     });
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
     if (wish.owner.id !== userId) {
       throw new BadRequestException('You are not the owner of the wish');
     }
     if (updateWishDto.price && wish.raised > 0) {
       throw new BadRequestException(
-        'You cannot update price because some sum is already raised',
+        'You cannot update price because some sum has already been raised',
       );
     }
     await this.wishRepository.update(wishId, updateWishDto);
@@ -63,6 +78,9 @@ export class WishesService {
       where: { id: wishId },
       relations: ['owner'],
     });
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
     if (wish.owner.id !== userId) {
       throw new BadRequestException('You are not the owner of the wish');
     }
@@ -75,6 +93,9 @@ export class WishesService {
       where: { id: wishId },
       relations: ['owner'],
     });
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
     if (wish.owner.id === user.id) {
       throw new BadRequestException('You сannot copy your own wish');
     }
@@ -83,8 +104,16 @@ export class WishesService {
     await queryRunner.startTransaction();
 
     try {
-      const { id, createdAt, updatedAt, copied, owner, offers, ...wish } =
-        await this.findById(wishId);
+      const {
+        id,
+        createdAt,
+        updatedAt,
+        copied,
+        owner,
+        offers,
+        raised,
+        ...wish
+      } = await this.wishRepository.findOneBy({ id: wishId });
       await this.wishRepository.update(wishId, { copied: copied + 1 });
 
       const wishCopy = await this.create(wish, user);
@@ -93,19 +122,24 @@ export class WishesService {
       return wishCopy;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      return false;
     } finally {
       await queryRunner.release();
     }
   }
 
   async getManyByIds(ids: number[]) {
-    return await this.wishRepository.find({
-      where: { id: In(ids) },
-    });
+    return (
+      (await this.wishRepository.find({
+        where: { id: In(ids) },
+      })) || []
+    );
   }
 
-  updateRaised(id: number, raised: number) {
-    return this.wishRepository.update(id, { raised });
+  async updateRaised(id: number, raised: number) {
+    const wish = await this.wishRepository.update(id, { raised });
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
+    return wish;
   }
 }
