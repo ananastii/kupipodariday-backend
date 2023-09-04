@@ -2,7 +2,7 @@ import { IsDecimal, Min } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from '../../common/base.entity';
+import { BaseEntity } from 'src/common/base-entity';
 
 @Entity()
 export class Offer extends BaseEntity {

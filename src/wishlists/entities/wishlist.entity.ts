@@ -2,7 +2,7 @@ import { IsOptional, IsUrl, Length } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Entity, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
-import { BaseEntity } from '../../common/base.entity';
+import { BaseEntity } from 'src/common/base-entity';
 
 @Entity()
 export class Wishlist extends BaseEntity {
