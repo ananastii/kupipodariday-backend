@@ -75,7 +75,7 @@ export class WishlistsService {
   }
 
   async remove(wishId: number, userId: number) {
-    const wishlist = await this.findById(wishId);
+    const wishlist = await this.wishlistRepository.findOneBy({ id: wishId });
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
     }

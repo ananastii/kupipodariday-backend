@@ -70,7 +70,7 @@ export class WishesService {
       );
     }
     await this.wishRepository.update(wishId, updateWishDto);
-    return await this.findById(wishId);
+    return await this.wishRepository.findOneBy({ id: wishId });
   }
 
   async remove(wishId: number, userId: number) {
