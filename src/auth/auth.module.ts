@@ -17,7 +17,11 @@ import config from '../config/config';
     HashModule,
     UsersModule,
     JwtModule.registerAsync({ useClass: JwtConfigFactory }),
-    ConfigModule.forRoot({ load: [config], isGlobal: true }),
+    ConfigModule.forRoot({
+      load: [config],
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtConfigFactory, JwtStrategy, LocalStrategy],
