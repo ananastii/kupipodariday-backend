@@ -10,7 +10,7 @@ export default () => ({
     password: process.env.DATABASE_PASSWORD || 'student',
     database: process.env.DATABASE_NAME || 'kupipodariday',
     entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
-    synchronize: Boolean(process.env.SYNCHRONIZE) || true,
+    synchronize: Boolean(process.env.DATABASE_SYNCHRONIZE) || true,
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'secret',
