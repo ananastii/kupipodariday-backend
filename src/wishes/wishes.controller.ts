@@ -18,6 +18,7 @@ import { AuthUser, AuthUserId } from '../common/decorators/user.decorator';
 import { User } from '../users/entities/user.entity';
 import { PasswordInterceptor } from '../common/interceptors/password.interceptor';
 import { ValidationExceptionFilter } from '../common/filters/validation-exception.filter';
+import { OfferInterceptor } from 'src/common/interceptors/offer.interceptor';
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
@@ -40,7 +41,7 @@ export class WishesController {
     return this.wishesService.findTop();
   }
 
-  @UseInterceptors(PasswordInterceptor)
+  @UseInterceptors(PasswordInterceptor, OfferInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
