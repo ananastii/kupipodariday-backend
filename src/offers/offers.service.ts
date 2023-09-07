@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { WishesService } from '../wishes/wishes.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 
@@ -16,9 +16,10 @@ export class OffersService {
     @InjectRepository(Offer)
     private readonly offerRepository: Repository<Offer>,
     private readonly wishesService: WishesService,
+    private readonly dataSource: DataSource,
   ) {}
-  async create(offer: CreateOfferDto, user: User) {
-    const { itemId, amount, ..._ } = offer;
+  async create(createOfferDto: CreateOfferDto, user: User) {
+    const { itemId, amount, ..._ } = createOfferDto;
     const wish = await this.wishesService.findById(itemId);
     if (wish.owner.id === user.id) {
       throw new BadRequestException('You сannot pay for your own wish');
@@ -30,8 +31,22 @@ export class OffersService {
         'The offer amount exceeds the remaining amount',
       );
     }
-    await this.wishesService.updateRaised(itemId, totalRaised);
-    return await this.offerRepository.save({ ...offer, user, item: wish });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await this.wishesService.updateRaised(itemId, totalRaised);
+      const offer = await this.offerRepository.save({
+        ...createOfferDto,
+        user,
+        item: wish,
+      });
+      return offer;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findOne(id: number) {

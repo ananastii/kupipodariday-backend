@@ -14,12 +14,10 @@ export class OfferInterceptor implements NestInterceptor {
   }
   private hideOfferAmount(wish: Wish): Wish {
     {
-      if (wish instanceof Object) {
-        if (wish.offers && wish.offers) {
-          for (const offer of wish.offers) {
-            if (offer.hidden) {
-              delete offer.amount;
-            }
+      if (wish instanceof Object && wish.offers) {
+        for (const offer of wish.offers) {
+          if (offer.hidden) {
+            delete offer.amount;
           }
         }
       }
