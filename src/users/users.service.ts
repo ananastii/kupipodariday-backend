@@ -68,7 +68,15 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { password } = updateUserDto;
+    const { password, username, email } = updateUserDto;
+    const existingUser = await this.userRepository.findOne({
+      where: [{ username }, { email }],
+    });
+    if (existingUser) {
+      throw new ConflictException(
+        'A user with this email or username already exists',
+      );
+    }
     if (password) {
       updateUserDto.password = await this.hashService.getHash(password);
     }
