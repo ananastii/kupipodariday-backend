@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConsoleLogger,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -74,15 +75,18 @@ export class WishlistsService {
     return await this.findById(id);
   }
 
-  async remove(wishId: number, userId: number) {
-    const wishlist = await this.wishlistRepository.findOneBy({ id: wishId });
+  async remove(wishlistId: number, userId: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: { id: wishlistId },
+      relations: ['owner'],
+    });
     if (!wishlist) {
       throw new NotFoundException('Wishlist not found');
     }
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException('You are not the owner of the wishlist');
     }
-    this.wishlistRepository.delete(wishId);
+    await this.wishlistRepository.delete(wishlistId);
     return wishlist;
   }
 }
