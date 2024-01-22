@@ -1,9 +1,9 @@
-# Wishlist service Kupipodariday
+# Virtual Wishlists API
 
-Backend for wishlist service.
-While doing this project I learned how to create NestJS applications
+KupiPodariDay (Buy-Present-Give) - Backend for wishlist service.
+The project was made during the education, while I was I learning how to build Node.js server-side applications using NestJS framework.
 
-## Main features
+## Features
 - Registration and authentication. User can provide username, avatar and profile description
 - Viewing the gift feed - latest and popular gifts
 - Each gift displays its name, cost, current funds raised, a purchase link, and information about interested users
@@ -22,13 +22,13 @@ While doing this project I learned how to create NestJS applications
 - NestJS
 - Typescript 
 - Node.js
+- Postman
 
 ## Setup
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Development](#development)
-- [Linting](#linting)
 
 ### Installation
 
@@ -79,12 +79,4 @@ For development purposes, you can use these commands:
 
   ```bash
   npm run format
-
-
-### Linting
-
-To lint the code and automatically fix issues:
-
-```bash
-npm run lint
 
